@@ -22,7 +22,7 @@ export class PostResolver {
   async createPost(
     @Arg('title') title: string,
     @Ctx() { em }: MyContext
-  ): Promise<Post | null> {
+  ): Promise<Post> {
     const post = em.create(Post, { title });
     await em.persistAndFlush(post);
     return post;
