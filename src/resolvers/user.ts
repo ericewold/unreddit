@@ -7,7 +7,8 @@ import {
   InputType,
   Field,
   Ctx,
-  ObjectType
+  ObjectType,
+  Query
 } from 'type-graphql';
 import argon2 from 'argon2';
 
@@ -38,6 +39,17 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req, em }: MyContext) {
+    // you are not logged in
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
