@@ -1,5 +1,5 @@
-import { User } from '../entities/User';
-import { MyContext } from '../types';
+import { User } from "../entities/User";
+import { MyContext } from "../types";
 import {
   Resolver,
   Arg,
@@ -9,9 +9,10 @@ import {
   Ctx,
   ObjectType,
   Query
-} from 'type-graphql';
-import argon2 from 'argon2';
-import { EntityManager } from '@mikro-orm/postgresql';
+} from "type-graphql";
+import argon2 from "argon2";
+import { EntityManager } from "@mikro-orm/postgresql";
+import { COOKIE_NAME } from "../constants";
 
 @InputType()
 class UsernamePasswordInput {
@@ -42,7 +43,7 @@ class UserResponse {
 export class UserResolver {
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req, em }: MyContext) {
-    console.log('session: ', req.session);
+    console.log("session: ", req.session);
 
     // you are not logged in
     if (!req.session.userId) {
@@ -55,15 +56,15 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
         errors: [
           {
-            field: 'username',
-            message: 'length must be greater than 2'
+            field: "username",
+            message: "length must be greater than 2"
           }
         ]
       };
@@ -72,8 +73,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'password',
-            message: 'length must be greater than 2'
+            field: "password",
+            message: "length must be greater than 2"
           }
         ]
       };
@@ -90,16 +91,16 @@ export class UserResolver {
           created_at: new Date(),
           updated_at: new Date()
         })
-        .returning('*');
+        .returning("*");
       user = result[0];
     } catch (err) {
-      if (err.detail.includes('already exists')) {
+      if (err.detail.includes("already exists")) {
         //duplicate username error
         return {
           errors: [
             {
-              field: 'username',
-              message: 'that username already taken'
+              field: "username",
+              message: "that username already taken"
             }
           ]
         };
@@ -117,7 +118,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const user = await em.findOne(User, { username: options.username });
@@ -125,7 +126,7 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'username',
+            field: "username",
             message: "that username doesn't exist"
           }
         ]
@@ -136,8 +137,8 @@ export class UserResolver {
       return {
         errors: [
           {
-            field: 'password',
-            message: 'incorrect password'
+            field: "password",
+            message: "incorrect password"
           }
         ]
       };
@@ -146,5 +147,20 @@ export class UserResolver {
     req.session.userId = user.id;
 
     return { user };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) =>
+      req.session.destroy((err: any) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log("destroy session err: ", err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      })
+    );
   }
 }
