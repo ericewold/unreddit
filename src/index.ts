@@ -15,6 +15,7 @@ import cors from "cors";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
+  //await orm.em.nativeDelete(User, {}); // delete all users
   await orm.getMigrator().up();
 
   const app = express();
