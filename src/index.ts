@@ -25,7 +25,7 @@ const main = async () => {
   app.use(
     cors({
       origin: "http://localhost:3000",
-      credentials: true
+      credentials: true,
     })
   );
 
@@ -35,32 +35,32 @@ const main = async () => {
       name: COOKIE_NAME,
       store: new RedisStore({
         client: redisClient,
-        disableTouch: true
+        disableTouch: true,
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
         sameSite: "lax", // csrf
-        secure: __prod__ // cookie only works in https
+        secure: __prod__, // cookie only works in https
       },
       saveUninitialized: false,
       //temp: store real secret after move to ENV
       secret: "9as97f9sdysa9d7asdfdhdfasd",
-      resave: false
+      resave: false,
     })
   );
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, PostResolver, UserResolver],
-      validate: false
+      validate: false,
     }),
-    context: ({ req, res }) => ({ em: orm.em, req, res })
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
   apolloServer.applyMiddleware({
     app,
-    cors: false
+    cors: false,
   });
 
   app.listen(4000, () => {
