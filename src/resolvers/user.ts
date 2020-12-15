@@ -1,14 +1,14 @@
-import { User } from "../entities/User";
-import { MyContext } from "../types";
 import {
   Resolver,
-  Arg,
   Mutation,
+  Arg,
   Field,
   Ctx,
   ObjectType,
   Query,
 } from "type-graphql";
+import { MyContext } from "../types";
+import { User } from "../entities/User";
 import argon2 from "argon2";
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from "../constants";
 import { UsernamePasswordInput } from "./UsernamePasswordInput";
@@ -94,7 +94,10 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  async forgotPassword() {
+  async forgotPassword(
+    @Arg("email") email: string,
+    @Ctx() { redis }: MyContext
+  ) {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       // email is not in the db
