@@ -220,8 +220,8 @@ export class PostResolver {
     if (post.creatorId !== req.session.userId) {
       throw new Error("not authorized");
     }
-    await Upvote.delete({ postId: id });
-    await Post.delete({ id });
+    // await Upvote.delete({ postId: id });
+    await Post.delete({ id, creatorId: req.session.userId });
     return true;
   }
 }
