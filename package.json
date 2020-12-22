@@ -4,6 +4,7 @@
   "description": "reddit-like server that groups may use to communicate privately",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
