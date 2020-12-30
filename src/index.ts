@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import "dotenv-safe/config";
 import { __prod__, COOKIE_NAME } from "./constants";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
@@ -21,9 +22,7 @@ import { createUpvoteLoader } from "./utils/createUpvoteLoader";
 const main = async () => {
   const conn = await createConnection({
     type: "postgres",
-    database: "unreddit2",
-    username: "postgres",
-    password: "postgres",
+    url: process.env.DATABASE_URL,
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, "./migrations/*")],
