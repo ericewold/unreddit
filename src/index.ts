@@ -38,10 +38,10 @@ const main = async () => {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis();
+  const redis = new Redis(process.env.REDIS_URL);
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: process.env.CORS_ORIGIN,
       credentials: true,
     })
   );
@@ -60,10 +60,11 @@ const main = async () => {
         httpOnly: true,
         sameSite: "lax", // csrf
         secure: __prod__, // cookie only works in https
-      },
+        domain: __prod__ ? ".mydomain.com" : undefined, //cookies may not work without a custom domain
+      }, // TODO: custom domain for cookies
       saveUninitialized: false,
       //temp: store real secret after move to ENV
-      secret: "9as97f9sdysa9d7asdfdhdfasd",
+      secret: process.env.SESSION_SECRET,
       resave: false,
     })
   );
@@ -87,7 +88,7 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(4000, () => {
+  app.listen(parseInt(process.env.PORT), () => {
     console.log("server started on localhost:4000");
   });
 };
