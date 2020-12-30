@@ -3,3 +3,4 @@ notes
 dist
 dist/*
 dump.rdb
+.env
