@@ -4,6 +4,7 @@
   "description": "reddit-like server that groups may use to communicate privately",
   "main": "index.js",
   "scripts": {
+    "gen-env": "npx gen-env-types .env -o src/env.d.ts -e .",
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
@@ -31,6 +32,7 @@
     "@types/nodemailer": "^6.4.0",
     "@types/redis": "^2.8.28",
     "@types/uuid": "^8.3.0",
+    "gen-env-types": "^1.0.4",
     "nodemon": "^2.0.6",
     "ts-node": "^9.1.0",
     "typescript": "^4.1.2"
