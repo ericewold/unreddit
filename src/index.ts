@@ -34,12 +34,11 @@ const main = async () => {
 
   //delete all post
   // await Post.delete({});
-
   const app = express();
 
   const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
-  app.set("proxy", 1);
+  app.set("trust proxy", 1);
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
@@ -61,8 +60,8 @@ const main = async () => {
         httpOnly: true,
         sameSite: "lax", // csrf
         secure: __prod__, // cookie only works in https
-        domain: __prod__ ? ".mydomain.com" : undefined, //cookies may not work without a custom domain
-      }, // TODO: custom domain for cookies
+        domain: __prod__ ? ".1776kun.com" : undefined, //cookies may not work without a custom domain
+      },
       saveUninitialized: false,
       //temp: store real secret after move to ENV
       secret: process.env.SESSION_SECRET,
